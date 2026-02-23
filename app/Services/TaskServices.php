@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\TaskAlreadyCompletedException;
 use App\Models\Task;
 use App\Services\Contracts\TaskServiceInterface;
 
@@ -15,7 +16,7 @@ class TaskServices implements TaskServiceInterface
     public function completed(Task $task): Task
     {
         if ($task->status === 'completed') {
-            return $task;
+            throw new TaskAlreadyCompletedException();
         }
 
         $task->update([

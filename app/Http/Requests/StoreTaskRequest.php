@@ -11,7 +11,7 @@ class StoreTaskRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,8 @@ class StoreTaskRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string'
+            'description' => 'nullable|string',
+            'status' => 'nullable|string|in:pending,completed'
         ];
     }
 }

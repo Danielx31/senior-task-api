@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Actions\CompleteTaskAction;
+use App\Actions\CreateTaskAction;
+use App\Events\TaskCompleted;
 use App\Events\TaskCreated;
 use App\Exceptions\TaskAlreadyCompletedException;
 use App\Models\Task;
@@ -9,10 +12,15 @@ use App\Services\Contracts\TaskServiceInterface;
 
 class TaskServices implements TaskServiceInterface
 {
+    public function __construct(
+        protected CreateTaskAction $createTaskAction,
+        protected CompleteTaskAction $completeTaskAction
+    ) {}
+
     public function create(array $data): Task
     {
 
-        $task = Task::create($data);
+        $task = $this->createTaskAction->execute($data);
 
         event(new TaskCreated($task));
 
@@ -21,14 +29,10 @@ class TaskServices implements TaskServiceInterface
 
     public function completed(Task $task): Task
     {
-        if ($task->status === 'completed') {
-            throw new TaskAlreadyCompletedException();
-        }
+        $completedTask = $this->completeTaskAction->execute($task);
 
-        $task->update([
-            'status' => 'completed'
-        ]);
+        event(new TaskCompleted($completedTask));
 
-        return $task;
+        return $completedTask;
     }
 }

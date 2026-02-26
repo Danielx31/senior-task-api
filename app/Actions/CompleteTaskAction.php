@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Events\TaskCompleted;
 use App\Exceptions\TaskAlreadyCompletedException;
 use App\Models\Task;
 
@@ -17,7 +18,7 @@ class CompleteTaskAction
 
     public function execute(Task $task): Task
     {
-        if ($task->status === 'completed') {
+        if ($task->isCompleted()) {
             throw new TaskAlreadyCompletedException();
         }
 
@@ -25,7 +26,7 @@ class CompleteTaskAction
             'status' => 'completed'
         ]);
 
-
+        event(new TaskCompleted($task));
 
         return $task;
     }

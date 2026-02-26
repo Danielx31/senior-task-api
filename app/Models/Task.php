@@ -11,4 +11,9 @@ class Task extends Model
     protected $casts = [
         'status' => 'string',
     ];
+
+    public function isCompleted(): bool
+    {
+        return $this->status === 'completed';
+    }
 }

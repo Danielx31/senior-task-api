@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Events\TaskCreated;
 use App\Models\Task;
+use Illuminate\Support\Facades\DB;
 
 class CreateTaskAction
 {
@@ -17,13 +18,15 @@ class CreateTaskAction
 
     public function execute(array $data): Task
     {
-        $task = Task::create([
-            'title' => $data['title'],
-            'description' => $data['description'] ?? null
-        ]);
+        return DB::transaction(function () use ($data) {
+            $task = Task::create([
+                'title' => $data['title'],
+                'description' => $data['description'] ?? null
+            ]);
 
-        event(new TaskCreated($task));
+            event(new TaskCreated($task));
 
-        return $task;
+            return $task->fresh();
+        });
     }
 }

@@ -5,6 +5,7 @@ namespace App\Actions;
 use App\Events\TaskCompleted;
 use App\Exceptions\TaskAlreadyCompletedException;
 use App\Models\Task;
+use Illuminate\Support\Facades\DB;
 
 class CompleteTaskAction
 {
@@ -18,16 +19,18 @@ class CompleteTaskAction
 
     public function execute(Task $task): Task
     {
-        if ($task->isCompleted()) {
-            throw new TaskAlreadyCompletedException();
-        }
+        return DB::transaction(function () use ($task) {
+            if ($task->isCompleted()) {
+                throw new TaskAlreadyCompletedException();
+            }
 
-        $task->update([
-            'status' => 'completed'
-        ]);
+            $task->update([
+                'status' => 'completed'
+            ]);
 
-        event(new TaskCompleted($task));
+            event(new TaskCompleted($task));
 
-        return $task;
+            return $task->fresh();
+        });
     }
 }

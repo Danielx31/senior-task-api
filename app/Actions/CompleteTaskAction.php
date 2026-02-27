@@ -20,6 +20,11 @@ class CompleteTaskAction
     public function execute(Task $task): Task
     {
         return DB::transaction(function () use ($task) {
+
+            $task = Task::where('id', $task->id)
+                ->lockForUpdate()
+                ->first();
+
             if ($task->isCompleted()) {
                 throw new TaskAlreadyCompletedException();
             }

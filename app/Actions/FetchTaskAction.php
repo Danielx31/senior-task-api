@@ -16,16 +16,16 @@ class FetchTaskAction
 
     public function execute(array $filters = [])
     {
-        $query = Task::query();
-
-        if (!empty($filters['status'])) {
-            $query->where('is_completed', $filters['status'] === 'completed' ? true : false);
-        }
-
-        if (!empty($filters['search'])) {
-            $query->where('title', 'like', '%' . $filters['search'] . '%');
-        }
-
-        return $query->latest()->paginate(10);
+        return Task::query()
+            ->when($filters['status'] ?? null, function ($query, $status) {
+                if ($status === 'completed') {
+                    $query->completed();
+                }
+            })
+            ->when($filters['search'] ?? null, function ($query, $search) {
+                $query->search($search);
+            })
+            ->latest()
+            ->paginate(10);
     }
 }

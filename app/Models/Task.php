@@ -19,4 +19,14 @@ class Task extends Model
     {
         return $this->status === 'completed';
     }
+
+    public function scopeCompleted($query)
+    {
+        return $query->where('status', 'completed');
+    }
+
+    public function scopeSearch($query, $keyword)
+    {
+        return $query->where('title', 'like', "%{$keyword}%");
+    }
 }

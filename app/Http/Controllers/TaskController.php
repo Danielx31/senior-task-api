@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\FetchTaskAction;
 use App\Http\Requests\StoreTaskRequest;
 use App\Models\Task;
 use App\Services\Contracts\TaskServiceInterface;
@@ -14,22 +13,19 @@ class TaskController extends Controller
     use ApiResponse;
 
     protected TaskServiceInterface $taskService;
-    protected FetchTaskAction $fetchTaskAction;
 
-    public function __construct(
-        TaskServiceInterface $taskService,
-        FetchTaskAction $fetchTaskAction
-    ) {
+    public function __construct(TaskServiceInterface $taskService)
+    {
         $this->taskService = $taskService;
-        $this->fetchTaskAction = $fetchTaskAction;
     }
 
     public function index(Request $request)
     {
-        $tasks = $this->fetchTaskAction->execute($request->all());
+        $tasks = $this->taskService->fetch($request->all());
 
         return $this->success($tasks, 'Tasks retrieved successfully', 200);
     }
+
     public function store(StoreTaskRequest $request)
     {
         $task = $this->taskService->create($request->validated());

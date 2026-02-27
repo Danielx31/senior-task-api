@@ -28,7 +28,9 @@ class CompleteTaskAction
                 'status' => 'completed'
             ]);
 
-            event(new TaskCompleted($task));
+            DB::afterCommit(function () use ($task) {
+                event(new TaskCompleted($task));
+            });
 
             return $task->fresh();
         });

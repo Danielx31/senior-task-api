@@ -24,7 +24,9 @@ class CreateTaskAction
                 'description' => $data['description'] ?? null
             ]);
 
-            event(new TaskCreated($task));
+            DB::afterCommit(function () use ($task) {
+                event(new TaskCreated($task));
+            });
 
             return $task->fresh();
         });

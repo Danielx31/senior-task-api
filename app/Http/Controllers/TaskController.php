@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\TaskData;
 use App\Http\Requests\StoreTaskRequest;
 use App\Models\Task;
 use App\Services\Contracts\TaskServiceInterface;
@@ -28,7 +29,8 @@ class TaskController extends Controller
 
     public function store(StoreTaskRequest $request)
     {
-        $task = $this->taskService->create($request->validated());
+        $taskData = TaskData::fromArray($request->validated());
+        $task = $this->taskService->create($taskData);
 
         return $this->success($task, 'Task created successfully', 201);
     }

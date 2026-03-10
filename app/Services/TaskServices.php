@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Actions\CompleteTaskAction;
 use App\Actions\CreateTaskAction;
 use App\Actions\FetchTaskAction;
+use App\DTO\TaskData;
 use App\Events\TaskCompleted;
 use App\Models\Task;
 use App\Services\Contracts\TaskServiceInterface;
@@ -22,7 +23,7 @@ class TaskServices implements TaskServiceInterface
         return $this->fetchTaskAction->execute($filters);
     }
 
-    public function create(array $data): Task
+    public function create(TaskData $data): Task
     {
         return $this->createTaskAction->execute($data);
     }

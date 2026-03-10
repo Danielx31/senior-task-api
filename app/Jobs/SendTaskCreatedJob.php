@@ -26,6 +26,10 @@ class SendTaskCreatedJob implements ShouldQueue
      */
     public function handle(): void
     {
+        sleep(5);
+
+        logger("Task notification sent");
+
         Log::info('Task notification sent', [
             'task_id' => $this->task->id
         ]);
